@@ -3,14 +3,17 @@ import { PrismaClient, Plan } from '@prisma/client';
 import { z } from 'zod';
 
 const PLANS = [
-  { id: 'starter' as Plan, name: 'Starter', price: 49, whatsappConversations: 500, prospectingLeads: 200, features: ['1 Website Widget', '500 WhatsApp conversations/mo', '200 prospecting leads/mo', '1 Knowledge Base', '2 Team members', 'Basic analytics'] },
-  { id: 'pro' as Plan, name: 'Pro', price: 149, whatsappConversations: 2000, prospectingLeads: 1000, features: ['3 Website Widgets', '2,000 WhatsApp conversations/mo', '1,000 prospecting leads/mo', '3 Knowledge Bases', '10 Team members', 'Advanced analytics', 'Custom branding', 'Priority support'] },
-  { id: 'business' as Plan, name: 'Business', price: 399, whatsappConversations: 10000, prospectingLeads: 5000, features: ['10 Website Widgets', '10,000 WhatsApp conversations/mo', '5,000 prospecting leads/mo', '10 Knowledge Bases', 'Unlimited team members', 'Advanced analytics + exports', 'White-label', 'Dedicated account manager', 'API access', 'Custom integrations'] },
-  { id: 'enterprise' as Plan, name: 'Enterprise', price: 0, whatsappConversations: 0, prospectingLeads: 0, features: ['Everything in Business', 'Custom limits', 'SLA guarantee', 'On-premise option', 'Dedicated infrastructure', '24/7 phone support', 'Custom AI model fine-tuning'] },
+  { id: Plan.Starter, name: 'Starter', price: 49, whatsappConversations: 500, prospectingLeads: 200, features: ['1 Website Widget', '500 WhatsApp conversations/mo', '200 prospecting leads/mo', '1 Knowledge Base', '2 Team members', 'Basic analytics'] },
+  { id: Plan.Pro, name: 'Pro', price: 149, whatsappConversations: 2000, prospectingLeads: 1000, features: ['3 Website Widgets', '2,000 WhatsApp conversations/mo', '1,000 prospecting leads/mo', '3 Knowledge Bases', '10 Team members', 'Advanced analytics', 'Custom branding', 'Priority support'] },
+  { id: Plan.Business, name: 'Business', price: 399, whatsappConversations: 10000, prospectingLeads: 5000, features: ['10 Website Widgets', '10,000 WhatsApp conversations/mo', '5,000 prospecting leads/mo', '10 Knowledge Bases', 'Unlimited team members', 'Advanced analytics + exports', 'White-label', 'Dedicated account manager', 'API access', 'Custom integrations'] },
+  { id: Plan.Enterprise, name: 'Enterprise', price: 0, whatsappConversations: 0, prospectingLeads: 0, features: ['Everything in Business', 'Custom limits', 'SLA guarantee', 'On-premise option', 'Dedicated infrastructure', '24/7 phone support', 'Custom AI model fine-tuning'] },
 ];
 
 const checkoutSchema = z.object({
-  plan: z.enum(['starter', 'pro', 'business', 'enterprise']),
+  plan: z.enum(['starter', 'pro', 'business', 'enterprise']).transform((p) => {
+    const map: Record<string, Plan> = { starter: Plan.Starter, pro: Plan.Pro, business: Plan.Business, enterprise: Plan.Enterprise };
+    return map[p];
+  }),
   successUrl: z.string().url(),
   cancelUrl: z.string().url(),
 });
@@ -51,7 +54,7 @@ export default async function (instance: FastifyInstance) {
       });
     }
 
-    if (plan === 'enterprise') {
+    if (plan === Plan.Enterprise) {
       return reply.status(400).send({
         error: { code: 'ENTERPRISE_REQUIRES_CONTACT', message: 'Please contact sales for Enterprise plans' },
       });
@@ -170,11 +173,11 @@ export default async function (instance: FastifyInstance) {
           where: { id: orgId },
           data: {
             plan: selectedPlan.id,
-            maxWhatsappNumbers: selectedPlan.id === 'starter' ? 1 : selectedPlan.id === 'pro' ? 3 : 10,
+            maxWhatsappNumbers: selectedPlan.id === Plan.Starter ? 1 : selectedPlan.id === Plan.Pro ? 3 : 10,
             maxProspectingLeadsMonthly: selectedPlan.prospectingLeads,
-            maxTeamMembers: selectedPlan.id === 'starter' ? 2 : selectedPlan.id === 'pro' ? 10 : 999,
-            maxConcurrentCampaigns: selectedPlan.id === 'starter' ? 1 : selectedPlan.id === 'pro' ? 5 : 20,
-            maxKnowledgeBases: selectedPlan.id === 'starter' ? 1 : selectedPlan.id === 'pro' ? 3 : 10,
+            maxTeamMembers: selectedPlan.id === Plan.Starter ? 2 : selectedPlan.id === Plan.Pro ? 10 : 999,
+            maxConcurrentCampaigns: selectedPlan.id === Plan.Starter ? 1 : selectedPlan.id === Plan.Pro ? 5 : 20,
+            maxKnowledgeBases: selectedPlan.id === Plan.Starter ? 1 : selectedPlan.id === Plan.Pro ? 3 : 10,
           },
         });
         break;

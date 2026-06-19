@@ -79,13 +79,11 @@ export async function getGaps(workspaceId: string, since?: Date): Promise<Knowle
     where: {
       role: 'user',
       confidenceScore: { lt: 0.6, not: null },
-      retrievedChunks: null,
+      retrievedChunks: null as any,
       conversation: { workspaceId },
       createdAt: { gte: sinceDate },
     },
-    select: {
-      content: true,
-      createdAt: true,
+    include: {
       conversation: { select: { channel: true } },
     },
     orderBy: { createdAt: 'desc' },
@@ -105,13 +103,13 @@ export async function getGaps(workspaceId: string, since?: Date): Promise<Knowle
     orderBy: { sentAt: 'desc' },
   });
 
-  const websiteQuestions = messages
-    .filter((m) => m.conversation.channel === 'website')
-    .map((m) => ({ text: m.content, channel: 'website' as const, createdAt: m.createdAt }));
+  const websiteQuestions = (messages as any[])
+    .filter((m: any) => m.conversation.channel === 'website')
+    .map((m: any) => ({ text: m.content, channel: 'website' as const, createdAt: m.createdAt }));
 
-  const whatsappQuestions = messages
-    .filter((m) => m.conversation.channel === 'whatsapp')
-    .map((m) => ({ text: m.content, channel: 'whatsapp' as const, createdAt: m.createdAt }));
+  const whatsappQuestions = (messages as any[])
+    .filter((m: any) => m.conversation.channel === 'whatsapp')
+    .map((m: any) => ({ text: m.content, channel: 'whatsapp' as const, createdAt: m.createdAt }));
 
   const prospectingQuestions = prospectingLowConfidence.map((m) => ({
     text: m.content,

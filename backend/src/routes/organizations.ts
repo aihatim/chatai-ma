@@ -165,7 +165,7 @@ export default async function (instance: FastifyInstance) {
       where: { organizationId: id },
       include: {
         user: {
-          select: { id: true, email: true, name: true, imageUrl: true },
+          select: { id: true, email: true, name: true, imageUrl: true, createdAt: true },
         },
       },
       orderBy: { user: { name: 'asc' } },

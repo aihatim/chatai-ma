@@ -37,17 +37,15 @@ async function aggregateWorkspaceDay(workspaceId: string, dateStr: string) {
             responseTimeMs: true,
             confidenceScore: true,
             detectedLanguage: true,
-            intentDetected: true,
           },
         },
-        _count: { select: { messages: true } },
       },
     });
 
     if (conversations.length === 0) continue;
 
     const totalConversations = conversations.length;
-    const totalMessages = conversations.reduce((sum, c) => sum + c._count.messages, 0);
+    const totalMessages = conversations.reduce((sum, c) => sum + c.messages.length, 0);
     const responseTimes = conversations
       .flatMap((c) => c.messages.map((m) => m.responseTimeMs))
       .filter((t): t is number => t !== null);

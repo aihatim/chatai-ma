@@ -74,10 +74,15 @@ export default async function (instance: FastifyInstance) {
       include: {
         workspace: { select: { id: true, name: true, organizationId: true } },
         knowledgeBase: { select: { id: true, name: true } },
-        _count: { select: { conversations: true } },
       },
       orderBy: { createdAt: 'desc' },
     });
+
+    const countPromises = chatbots.map((c) =>
+      prisma.conversation.count({ where: { chatbotId: c.id } }).then((count) => ({ id: c.id, count })),
+    );
+    const counts = await Promise.all(countPromises);
+    const countMap = new Map(counts.map((c) => [c.id, c.count]));
 
     return chatbots.map((c) => ({
       id: c.id,
@@ -99,7 +104,7 @@ export default async function (instance: FastifyInstance) {
       satisfactionScore: c.satisfactionScore,
       createdAt: c.createdAt,
       updatedAt: c.updatedAt,
-      conversationCount: c._count.conversations,
+      conversationCount: countMap.get(c.id) || 0,
     }));
   });
 
