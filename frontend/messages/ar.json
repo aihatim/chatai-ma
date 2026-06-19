@@ -1,0 +1,75 @@
+{
+  "common": {
+    "loading": "جار التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "search": "بحث",
+    "noResults": "لا توجد نتائج",
+    "confirm": "تأكيد",
+    "back": "رجوع",
+    "next": "التالي",
+    "finish": "إنهاء"
+  },
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "website": "الموقع الإلكتروني",
+    "whatsapp": "واتساب",
+    "prospecting": "التنقيب",
+    "analytics": "التحليلات",
+    "settings": "الإعدادات",
+    "billing": "الفواتير",
+    "team": "الفريق"
+  },
+  "auth": {
+    "signIn": "تسجيل الدخول",
+    "signUp": "إنشاء حساب",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "googleSignIn": "المتابعة عبر جوجل",
+    "magicLink": "إرسال رابط سحري"
+  },
+  "dashboard": {
+    "overview": "نظرة عامة",
+    "totalRevenue": "إجمالي الإيرادات",
+    "activeConversations": "المحادثات النشطة",
+    "responseTime": "متوسط وقت الاستجابة",
+    "satisfaction": "معدل الرضا",
+    "conversionRate": "معدل التحويل"
+  },
+  "website": {
+    "widgetConfig": "إعدادات القطعة",
+    "embedCode": "رمز التضمين",
+    "chameleonMode": "وضع الحرباء",
+    "welcomeMessage": "رسالة الترحيب",
+    "colors": "الألوان"
+  },
+  "whatsapp": {
+    "phoneNumber": "رقم الهاتف",
+    "connected": "متصل",
+    "disconnected": "غير متصل",
+    "testMessage": "إرسال رسالة اختبارية",
+    "templates": "قوالب الرسائل"
+  },
+  "prospecting": {
+    "campaigns": "الحملات",
+    "leads": "العملاء المحتملون",
+    "pipeline": "مسار المبيعات",
+    "newCampaign": "حملة جديدة",
+    "dailyLimit": "الحد اليومي",
+    "blacklist": "القائمة السوداء"
+  },
+  "analytics": {
+    "revenueByChannel": "الإيرادات حسب القناة",
+    "conversationVolume": "حجم المحادثات",
+    "topIntents": "أهم النوايا",
+    "languageDistribution": "توزيع اللغات"
+  },
+  "billing": {
+    "plan": "الخطة الحالية",
+    "upgrade": "ترقية الخطة",
+    "usage": "الاستخدام",
+    "invoices": "الفواتير"
+  }
+}

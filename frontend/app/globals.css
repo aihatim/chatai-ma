@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-obsidian-50: #f0f0f1;
+  --color-obsidian-100: #d9d9dc;
+  --color-obsidian-200: #b3b3b9;
+  --color-obsidian-300: #8c8d96;
+  --color-obsidian-400: #666673;
+  --color-obsidian-500: #404050;
+  --color-obsidian-600: #333340;
+  --color-obsidian-700: #262630;
+  --color-obsidian-800: #1a1a20;
+  --color-obsidian-900: #0d0d10;
+  --color-obsidian-950: #08080a;
+
+  --color-gold-50: #fef8ee;
+  --color-gold-100: #fdf0d5;
+  --color-gold-200: #fbe0ab;
+  --color-gold-300: #f8c56c;
+  --color-gold-400: #f5b042;
+  --color-gold-500: #d4a853;
+  --color-gold-600: #b89230;
+  --color-gold-700: #96752a;
+  --color-gold-800: #7b5f27;
+  --color-gold-900: #664f24;
+
+  --color-teal-50: #ecfdf5;
+  --color-teal-100: #d1fae5;
+  --color-teal-200: #a7f3d0;
+  --color-teal-300: #6ee7b7;
+  --color-teal-400: #34d399;
+  --color-teal-500: #2dd4bf;
+  --color-teal-600: #14b8a6;
+  --color-teal-700: #0d9488;
+  --color-teal-800: #0f766e;
+  --color-teal-900: #115e59;
+
+  --color-whatsapp: #25D366;
+  --color-whatsapp-dark: #1da851;
+  --color-amber: #F59E0B;
+}
+
+@layer base {
+  * { @apply border-obsidian-700; }
+  body {
+    @apply bg-obsidian-950 text-obsidian-100;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  :root {
+    --channel-website: #2DD4BF;
+    --channel-whatsapp: #25D366;
+    --channel-prospecting: #F59E0B;
+    --channel-all: #D4A853;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin { scrollbar-width: thin; scrollbar-color: #404050 transparent; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: #404050; border-radius: 3px; }
+  .gradient-gold { background: linear-gradient(135deg, #d4a853, #f5b042, #d4a853); }
+  .gradient-obsidian { background: linear-gradient(180deg, #1a1a20 0%, #0d0d10 100%); }
+  .channel-website { border-color: #2DD4BF; }
+  .channel-whatsapp { border-color: #25D366; }
+  .channel-prospecting { border-color: #F59E0B; }
+  .text-channel-website { color: #2DD4BF; }
+  .text-channel-whatsapp { color: #25D366; }
+  .text-channel-prospecting { color: #F59E0B; }
+  .bg-channel-website { background-color: #2DD4BF; }
+  .bg-channel-whatsapp { background-color: #25D366; }
+  .bg-channel-prospecting { background-color: #F59E0B; }
+}

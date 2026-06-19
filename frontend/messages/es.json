@@ -1,0 +1,75 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "search": "Buscar",
+    "noResults": "Sin resultados",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "finish": "Finalizar"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "website": "Sitio web",
+    "whatsapp": "WhatsApp",
+    "prospecting": "Prospección",
+    "analytics": "Analíticas",
+    "settings": "Ajustes",
+    "billing": "Facturación",
+    "team": "Equipo"
+  },
+  "auth": {
+    "signIn": "Iniciar sesión",
+    "signUp": "Registrarse",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "googleSignIn": "Continuar con Google",
+    "magicLink": "Enviar enlace mágico"
+  },
+  "dashboard": {
+    "overview": "Resumen",
+    "totalRevenue": "Ingresos totales",
+    "activeConversations": "Conversaciones activas",
+    "responseTime": "Tiempo de respuesta medio",
+    "satisfaction": "Puntuación de satisfacción",
+    "conversionRate": "Tasa de conversión"
+  },
+  "website": {
+    "widgetConfig": "Configuración del widget",
+    "embedCode": "Código de incrustación",
+    "chameleonMode": "Modo camaleón",
+    "welcomeMessage": "Mensaje de bienvenida",
+    "colors": "Colores"
+  },
+  "whatsapp": {
+    "phoneNumber": "Número de teléfono",
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "testMessage": "Enviar mensaje de prueba",
+    "templates": "Plantillas de mensajes"
+  },
+  "prospecting": {
+    "campaigns": "Campañas",
+    "leads": "Clientes potenciales",
+    "pipeline": "Pipeline",
+    "newCampaign": "Nueva campaña",
+    "dailyLimit": "Límite diario",
+    "blacklist": "Lista negra"
+  },
+  "analytics": {
+    "revenueByChannel": "Ingresos por canal",
+    "conversationVolume": "Volumen de conversaciones",
+    "topIntents": "Intenciones principales",
+    "languageDistribution": "Distribución de idiomas"
+  },
+  "billing": {
+    "plan": "Plan actual",
+    "upgrade": "Mejorar plan",
+    "usage": "Uso",
+    "invoices": "Facturas"
+  }
+}

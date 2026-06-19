@@ -1,0 +1,32 @@
+{
+  "name": "chatai-ma",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ChatAi.ma — Enterprise AI Revenue Engine",
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "clean": "turbo clean"
+  },
+  "workspaces": [
+    "frontend",
+    "backend",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.29.7",
+    "@react-three/fiber": "^8.17.0",
+    "@types/three": "^0.171.0",
+    "effect": "^3.21.4",
+    "hls.js": "^1.6.16",
+    "three": "^0.170.0"
+  }
+}

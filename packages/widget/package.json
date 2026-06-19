@@ -1,0 +1,16 @@
+{
+  "name": "@chatai/widget",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/widget.js",
+  "files": ["dist"],
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --minify --outfile=dist/widget.js --format=iife --global-name=ChatAiWidget",
+    "dev": "esbuild src/index.ts --bundle --outfile=dist/widget.js --format=iife --global-name=ChatAiWidget --watch",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0"
+  }
+}

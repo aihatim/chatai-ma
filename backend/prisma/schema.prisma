@@ -1,0 +1,613 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Plan {
+  Starter
+  Pro
+  Business
+  Enterprise
+}
+
+enum SubscriptionStatus {
+  Active
+  PastDue
+  Cancelled
+  Trialing
+}
+
+enum Channel {
+  website
+  whatsapp
+  prospecting
+}
+
+enum MessageRole {
+  user
+  assistant
+  system
+  human_agent
+}
+
+enum ConversationStatus {
+  Active
+  Escalated
+  Closed
+}
+
+enum LeadStatus {
+  New
+  Contacted
+  Responded
+  Engaged
+  Qualified
+  MeetingBooked
+  Closed
+  Cold
+  Archived
+  Unsubscribed
+}
+
+enum CampaignStatus {
+  Draft
+  Scheduled
+  Active
+  Paused
+  Completed
+  Cancelled
+}
+
+enum ChatbotStatus {
+  Draft
+  Active
+  Paused
+  Archived
+}
+
+enum Sentiment {
+  Positive
+  Neutral
+  Negative
+}
+
+enum Language {
+  en
+  fr
+  ar
+  es
+}
+
+enum DocumentStatus {
+  Processing
+  Ready
+  Error
+}
+
+enum KBStatus {
+  Empty
+  Indexing
+  Ready
+  Error
+}
+
+enum FileType {
+  pdf
+  docx
+  txt
+  md
+  csv
+  json
+  png
+  jpg
+  mp4
+  mp3
+  web_crawl
+}
+
+enum RevenueChannel {
+  website
+  whatsapp
+  prospecting
+}
+
+model Organization {
+  id                      String   @id @default(cuid())
+  name                    String
+  slug                    String   @unique
+  logoUrl                 String?
+  ownerId                 String
+  plan                    Plan     @default(Starter)
+  maxWebsites             Int      @default(1)
+  maxWhatsappNumbers      Int      @default(0)
+  maxProspectingLeadsMonthly Int  @default(0)
+  maxConcurrentCampaigns  Int      @default(0)
+  maxKnowledgeBases       Int      @default(1)
+  maxTeamMembers          Int      @default(1)
+  isActive                Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  workspaces   Workspace[]
+  members      OrgMember[]
+  subscriptions Subscription[]
+  owner        User       @relation(fields: [ownerId], references: [id])
+}
+
+model Workspace {
+  id               String   @id @default(cuid())
+  organizationId   String
+  name             String
+  slug             String   @unique
+  defaultLanguage  Language @default(fr)
+  timezone         String   @default("Africa/Casablanca")
+  currency         String   @default("MAD")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization       Organization          @relation(fields: [organizationId], references: [id])
+  websiteChannels    WebsiteChannel[]
+  whatsappChannels   WhatsAppChannel[]
+  chatbots           Chatbot[]
+  knowledgeBases     KnowledgeBase[]
+  prospectingCampaigns ProspectingCampaign[]
+  conversations      Conversation[]
+  customers          Customer[]
+  leads              Lead[]
+  revenueAttributions RevenueAttribution[]
+  objectionTemplates ObjectionTemplate[]
+  doNotContact       DoNotContactList[]
+  members            WorkspaceMember[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  passwordHash String?
+  googleId  String?  @unique
+  imageUrl  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ownedOrganizations Organization[]
+  orgMemberships     OrgMember[]
+  workspaceMemberships WorkspaceMember[]
+  messages           Message[]
+  consentConfirmations ProspectingCampaign[] @relation("ConsentConfirmations")
+  createdCampaigns     ProspectingCampaign[] @relation("CampaignCreators")
+  dncEntries           DoNotContactList[]
+  revenueAttributions RevenueAttribution[]
+  knowledgeDocuments  KnowledgeDocument[]
+}
+
+model OrgMember {
+  id             String @id @default(cuid())
+  organizationId String
+  userId         String
+  role           String @default("member") // owner, admin, member
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
+
+  @@unique([organizationId, userId])
+}
+
+model WorkspaceMember {
+  id          String @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String @default("member") // admin, website_editor, whatsapp_agent, sales_manager, sales_rep, analyst, api_consumer
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([workspaceId, userId])
+}
+
+model WebsiteChannel {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  name                String
+  domain              String
+  embedToken          String   @unique
+  widgetConfig        Json?
+  isActive            Boolean  @default(true)
+  totalConversations  Int      @default(0)
+  totalMessages       Int      @default(0)
+  avgResponseTimeMs   Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  chatbots  Chatbot[] @relation("ChatbotWebsiteChannel")
+}
+
+model WhatsAppChannel {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  name                String
+  phoneNumber         String
+  phoneNumberId       String
+  businessAccountId   String
+  verifyToken         String
+  accessTokenEncrypted String
+  isConnected         Boolean  @default(false)
+  isActive            Boolean  @default(true)
+  totalConversations  Int      @default(0)
+  totalMessages       Int      @default(0)
+  avgResponseTimeMs   Int      @default(0)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  chatbots  Chatbot[] @relation("ChatbotWhatsAppChannel")
+}
+
+model ProspectingCampaign {
+  id                    String         @id @default(cuid())
+  workspaceId           String
+  name                  String
+  status                CampaignStatus @default(Draft)
+  targetIndustries      Json?
+  targetCompanySizes    Json?
+  targetGeographies     Json?
+  targetJobTitles       Json?
+  keywords              Json?
+  dataSource            String         @default("CSV")
+  maxContactsPerDay     Int            @default(100)
+  timeWindowStart       String         @default("09:00")
+  timeWindowEnd         String         @default("18:00")
+  timezone              String         @default("Africa/Casablanca")
+  pauseWeekends         Boolean        @default(true)
+  noResponseAfterNMsgs  Int            @default(3)
+  noResponseAfterDays   Int            @default(7)
+  maxConversationLength Int            @default(5)
+  openingMessageVariants Json?
+  valueProposition      String?
+  objectionHandlers     Json?
+  ctaType               String         @default("BookDemo")
+  knowledgeBaseId       String?
+  consentConfirmed      Boolean        @default(false)
+  consentConfirmedBy    String?
+  consentConfirmedAt    DateTime?
+  totalLeads            Int            @default(0)
+  totalContacted        Int            @default(0)
+  totalResponded        Int            @default(0)
+  totalQualified        Int            @default(0)
+  totalMeetingsBooked   Int            @default(0)
+  totalRevenueGenerated Decimal        @default(0)
+  scheduledStartAt      DateTime?
+  startedAt             DateTime?
+  pausedAt              DateTime?
+  completedAt           DateTime?
+  createdBy             String
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  knowledgeBase KnowledgeBase? @relation(fields: [knowledgeBaseId], references: [id])
+  consentBy    User?           @relation("ConsentConfirmations", fields: [consentConfirmedBy], references: [id])
+  createdByUser User           @relation("CampaignCreators", fields: [createdBy], references: [id])
+  leads        Lead[]
+  messages     ProspectingMessage[]
+}
+
+model Lead {
+  id                    String      @id @default(cuid())
+  campaignId            String
+  workspaceId           String
+  phoneNumber           String
+  phoneNumberHash       String
+  email                 String?
+  name                  String?
+  companyName           String?
+  jobTitle              String?
+  industry              String?
+  website               String?
+  score                 Int         @default(0)
+  scoreFactors          Json?
+  scoreCalculatedAt     DateTime?
+  status                LeadStatus  @default(New)
+  messagesSent          Int         @default(0)
+  messagesReceived      Int         @default(0)
+  lastMessageSentAt     DateTime?
+  lastMessageReceivedAt DateTime?
+  lastSentVariantId     String?
+  budgetConfirmed       Boolean?
+  authorityConfirmed    Boolean?
+  needConfirmed         Boolean?
+  timelineConfirmed     Boolean?
+  meetingBookedAt       DateTime?
+  meetingScheduledFor   DateTime?
+  dealClosedAt          DateTime?
+  dealValue             Decimal?
+  overallSentiment      Sentiment?
+  detectedLanguage      Language?
+  isBlacklisted         Boolean     @default(false)
+  blacklistReason       String?
+  createdAt             DateTime    @default(now())
+  updatedAt             DateTime    @updatedAt
+
+  campaign ProspectingCampaign @relation(fields: [campaignId], references: [id])
+  workspace Workspace          @relation(fields: [workspaceId], references: [id])
+  messages ProspectingMessage[]
+}
+
+model ProspectingMessage {
+  id                String    @id @default(cuid())
+  leadId            String
+  campaignId        String
+  direction         String    // outbound, inbound
+  content           String
+  variantId         String?
+  sentiment         Sentiment?
+  intentDetected    String?
+  confidenceScore   Float?
+  model             String?
+  responseTimeMs    Int?
+  includesUnsubscribe Boolean @default(false)
+  sentVia           String    @default("whatsapp") // whatsapp, sms, email
+  sentAt            DateTime  @default(now())
+  createdAt         DateTime  @default(now())
+
+  lead     Lead                @relation(fields: [leadId], references: [id])
+  campaign ProspectingCampaign @relation(fields: [campaignId], references: [id])
+}
+
+model Conversation {
+  id                      String             @id @default(cuid())
+  workspaceId             String
+  channel                 Channel
+  channelId               String
+  chatbotId               String?
+  customerPhone           String?
+  customerPhoneHash       String?
+  customerEmail           String?
+  customerId              String?
+  sessionId               String
+  sourceUrl               String?
+  sourceDomain            String?
+  userAgent               String?
+  userIpHash              String?
+  userCountry             String?
+  userLanguage            Language?
+  messageCount            Int                @default(0)
+  firstResponseTimeMs     Int?
+  satisfactionRating      String?
+  leadScore               String?            // Cold, Warm, Hot
+  leadTags                Json               @default("[]")
+  attributedRevenue       Decimal            @default(0)
+  revenueAttributionChannel RevenueChannel?
+  status                  ConversationStatus @default(Active)
+  escalatedTo             String?
+  startedAt               DateTime           @default(now())
+  lastMessageAt           DateTime           @default(now())
+  closedAt                DateTime?
+  createdAt               DateTime           @default(now())
+
+  workspace  Workspace  @relation(fields: [workspaceId], references: [id])
+  customer   Customer?  @relation(fields: [customerId], references: [id])
+  messages   Message[]
+  revenue    RevenueAttribution[]
+}
+
+model Message {
+  id                  String        @id @default(cuid())
+  conversationId      String
+  role                MessageRole
+  content             String
+  retrievedChunks     Json?
+  confidenceScore     Float?
+  model               String?
+  responseTimeMs      Int?
+  whatsappMessageId   String?
+  whatsappMessageType String?
+  detectedLanguage    Language?
+  isDarija            Boolean       @default(false)
+  createdAt           DateTime      @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  user         User?        @relation(fields: [createdBy], references: [id])
+  createdBy    String?
+}
+
+model Customer {
+  id                String   @id @default(cuid())
+  workspaceId       String
+  phone             String?
+  phoneHash         String?
+  email             String?
+  name              String?
+  firstSeenAt       DateTime @default(now())
+  firstSeenChannel  Channel
+  lastSeenAt        DateTime @default(now())
+  lastSeenChannel   Channel
+  totalConversations Int     @default(0)
+  totalRevenue      Decimal  @default(0)
+  preferredLanguage Language?
+  isBlacklisted     Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id])
+  conversations  Conversation[]
+  revenueAttributions RevenueAttribution[]
+}
+
+model KnowledgeBase {
+  id              String    @id @default(cuid())
+  workspaceId     String
+  name            String
+  description     String?
+  status          KBStatus  @default(Empty)
+  totalDocuments  Int       @default(0)
+  totalChunks     Int       @default(0)
+  totalSizeMb     Float     @default(0)
+  lastIndexedAt   DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  workspace    Workspace           @relation(fields: [workspaceId], references: [id])
+  documents    KnowledgeDocument[]
+  chatbots     Chatbot[]
+  campaigns    ProspectingCampaign[]
+}
+
+model KnowledgeDocument {
+  id             String         @id @default(cuid())
+  knowledgeBaseId String
+  filename       String
+  fileType       FileType
+  fileSizeBytes  Int
+  storageUrl     String?
+  status         DocumentStatus @default(Processing)
+  chunkCount     Int            @default(0)
+  errorMessage   String?
+  uploadedBy     String
+  createdAt      DateTime       @default(now())
+  processedAt    DateTime?
+
+  knowledgeBase KnowledgeBase @relation(fields: [knowledgeBaseId], references: [id])
+  uploader      User          @relation(fields: [uploadedBy], references: [id])
+}
+
+model Chatbot {
+  id                    String        @id @default(cuid())
+  workspaceId           String
+  name                  String
+  channel               Channel
+  channelId             String?
+  status                ChatbotStatus @default(Draft)
+  personaId             String?
+  customSystemPrompt    String?
+  temperature           Float         @default(0.3)
+  maxTokens             Int           @default(1024)
+  fallbackMessageEn     String?
+  fallbackMessageFr     String?
+  fallbackMessageAr     String?
+  fallbackMessageEs     String?
+  confidenceThreshold   Float         @default(0.6)
+  widgetConfig          Json?
+  isChameleonEnabled    Boolean       @default(false)
+  embedToken            String?       @unique
+  autoDetectLanguage    Boolean       @default(true)
+  supportedLanguages    Json          @default("[\"en\",\"fr\",\"ar\",\"es\"]")
+  hitlEnabled           Boolean       @default(false)
+  hitlTriggerConfidence Float         @default(0.3)
+  activeKnowledgeBaseId String?
+  totalConversations    Int           @default(0)
+  avgResponseTimeMs     Int           @default(0)
+  satisfactionScore     Float         @default(0)
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id])
+  knowledgeBase  KnowledgeBase? @relation(fields: [activeKnowledgeBaseId], references: [id])
+  websiteChannel WebsiteChannel? @relation("ChatbotWebsiteChannel", fields: [channelId], references: [id], map: "Chatbot_websiteChannelId_fkey")
+  whatsappChannel WhatsAppChannel? @relation("ChatbotWhatsAppChannel", fields: [channelId], references: [id], map: "Chatbot_whatsappChannelId_fkey")
+}
+
+model ObjectionTemplate {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  category            String   // Price, Timing, Competition, NotInterested, NeedApproval, AlreadyHaveSolution, Other
+  objectionPattern    String
+  responses           Json
+  effectivenessScore  Float    @default(0)
+  usageCount          Int      @default(0)
+  isBuiltin           Boolean  @default(false)
+  createdAt           DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model DoNotContactList {
+  id          String   @id @default(cuid())
+  workspaceId String
+  phoneHash   String   @unique
+  emailHash   String?  @unique
+  reason      String   // Unsubscribed, Complaint, Manual, PlatformAbuse
+  addedBy     String
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
+  addedByUser User    @relation(fields: [addedBy], references: [id])
+}
+
+model RevenueAttribution {
+  id             String         @id @default(cuid())
+  workspaceId    String
+  conversationId String
+  customerId     String?
+  channel        RevenueChannel
+  amount         Decimal
+  description    String?
+  dealStage      String         // Lead, Qualified, Proposal, ClosedWon, ClosedLost
+  attributedBy   String
+  createdAt      DateTime       @default(now())
+
+  workspace    Workspace    @relation(fields: [workspaceId], references: [id])
+  conversation Conversation @relation(fields: [conversationId], references: [id])
+  customer     Customer?    @relation(fields: [customerId], references: [id])
+  attributor   User         @relation(fields: [attributedBy], references: [id])
+}
+
+model ChannelAnalyticsSnapshot {
+  id                  String   @id @default(cuid())
+  workspaceId         String
+  channel             String   // website, whatsapp, prospecting, all
+  chatbotId           String?
+  date                DateTime
+  totalConversations  Int      @default(0)
+  totalMessages       Int      @default(0)
+  activeUsers         Int      @default(0)
+  bounceRate          Float    @default(0)
+  avgResponseTimeMs   Int      @default(0)
+  satisfactionPositive Int     @default(0)
+  satisfactionNegative Int     @default(0)
+  intentDistribution  Json     @default("{}")
+  languageDistribution Json    @default("{}")
+  leadDistribution    Json     @default("{}")
+  leadsContacted      Int      @default(0)
+  leadsResponded      Int      @default(0)
+  leadsQualified      Int      @default(0)
+  meetingsBooked      Int      @default(0)
+  revenueGenerated    Decimal  @default(0)
+  createdAt           DateTime @default(now())
+
+  @@unique([workspaceId, channel, chatbotId, date])
+}
+
+model Subscription {
+  id                        String             @id @default(cuid())
+  organizationId            String
+  stripeSubscriptionId      String             @unique
+  plan                      Plan
+  status                    SubscriptionStatus @default(Trialing)
+  currentPeriodStart        DateTime
+  currentPeriodEnd          DateTime
+  whatsappConversationsUsed Int                @default(0)
+  whatsappConversationsLimit Int
+  prospectingLeadsUsed      Int                @default(0)
+  prospectingLeadsLimit     Int
+  amountPerMonth            Decimal
+  createdAt                 DateTime           @default(now())
+  updatedAt                 DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+}
+
+model Persona {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  systemPrompt String
+  isBuiltin   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}

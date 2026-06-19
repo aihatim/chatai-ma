@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatAi.ma Widget — Test Page</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #1a1a2e;
+    }
+
+    .page-header {
+      background: #1a1a2e;
+      color: #fff;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .page-header h1 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .page-header .badge {
+      background: #b8860b;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .page-content {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #1a1a2e;
+    }
+
+    .card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #6c757d;
+      margin-bottom: 16px;
+    }
+
+    .card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .config-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .config-form .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .config-form label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 6px;
+    }
+
+    .config-form input,
+    .config-form select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1.5px solid #dee2e6;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .config-form input:focus,
+    .config-form select:focus {
+      border-color: #b8860b;
+      box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.1);
+    }
+
+    .config-form button {
+      grid-column: 1 / -1;
+      padding: 10px 24px;
+      background: #b8860b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+
+    .config-form button:hover {
+      background: #d4af37;
+    }
+
+    .api-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .api-controls button {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: 1.5px solid #b8860b;
+      background: transparent;
+      color: #b8860b;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .api-controls button:hover {
+      background: #b8860b;
+      color: #fff;
+    }
+
+    .api-controls button.primary {
+      background: #b8860b;
+      color: #fff;
+    }
+
+    .api-controls button.primary:hover {
+      background: #d4af37;
+      border-color: #d4af37;
+    }
+
+    .api-status {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .api-status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .api-status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .code-block {
+      background: #1a1a2e;
+      color: #e8e8e8;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    .logo-placeholder {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .logo-placeholder img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: contain;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .features li {
+      list-style: none;
+      padding: 8px 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #495057;
+    }
+
+    .features li::before {
+      content: "✓ ";
+      color: #b8860b;
+      font-weight: 600;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #e8e8e8;
+      margin: 24px 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <h1>ChatAi.ma Widget</h1>
+    <span class="badge">Test Environment</span>
+  </header>
+
+  <main class="page-content">
+    <div class="card">
+      <h2>Widget Embed Test</h2>
+      <p>
+        This page simulates a website that embeds the ChatAi.ma widget.
+        The widget should appear as a chat bubble in the bottom-right corner.
+      </p>
+      <div class="logo-placeholder">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='8' fill='%23b8860b'/%3E%3Ctext x='24' y='32' font-size='24' fill='white' text-anchor='middle' font-family='sans-serif'%3EC%3C/text%3E%3C/svg%3E"
+             alt="Company Logo" id="company-logo" />
+        <span style="font-size: 14px; color: #495057;">
+          <strong>Acme Corp</strong> — Logo detected for Chameleon Mode
+        </span>
+      </div>
+      <div class="features">
+        <li>Shadow DOM isolation</li>
+        <li>Obsidian &amp; Gold theme</li>
+        <li>Multi-language (EN/FR/AR/ES)</li>
+        <li>SSE streaming chat</li>
+        <li>Chameleon Mode</li>
+        <li>Responsive design</li>
+        <li>RTL support (Arabic)</li>
+        <li>~35KB gzipped</li>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Programmatic API Controls</h2>
+      <p>Use these buttons to test the global <code>ChatAiWidget</code> API.</p>
+      <div class="api-controls">
+        <button class="primary" onclick="ChatAiWidget.open()">Open Chat</button>
+        <button onclick="ChatAiWidget.close()">Close</button>
+        <button onclick="ChatAiWidget.toggle()">Toggle</button>
+        <button onclick="ChatAiWidget.resetConversation()">New Conversation</button>
+      </div>
+      <hr />
+      <div class="api-controls">
+        <label style="font-size:13px; font-weight:500;">Language:</label>
+        <select onchange="ChatAiWidget.setLanguage(this.value)">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="ar">العربية</option>
+          <option value="es">Español</option>
+        </select>
+        <label style="font-size:13px; font-weight:500; margin-left:12px;">Theme:</label>
+        <select onchange="ChatAiWidget.setTheme(this.value)">
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+        <label style="font-size:13px; font-weight:500; margin-left:12px;">Primary Color:</label>
+        <input type="color" value="#b8860b" onchange="ChatAiWidget.setPrimaryColor(this.value)" style="width:40px;height:32px;padding:2px;border:1px solid #dee2e6;border-radius:4px;" />
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Widget Configuration</h2>
+      <p>Modify these values and reload the page to test different widget configurations.</p>
+      <form class="config-form" id="config-form">
+        <div class="full-width">
+          <label for="token">Token</label>
+          <input type="text" id="token" value="test_token_123" placeholder="Your widget token" />
+        </div>
+        <div>
+          <label for="position">Position</label>
+          <select id="position">
+            <option value="bottom-right">Bottom Right</option>
+            <option value="bottom-left">Bottom Left</option>
+          </select>
+        </div>
+        <div>
+          <label for="language">Language</label>
+          <select id="language">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="ar">العربية</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+        <div>
+          <label for="color">Primary Color</label>
+          <input type="color" id="color" value="#b8860b" />
+        </div>
+        <div>
+          <label for="theme">Theme</label>
+          <select id="theme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+        <div>
+          <label for="chameleon">Chameleon Mode</label>
+          <select id="chameleon">
+            <option value="true">Enabled</option>
+            <option value="false">Disabled</option>
+          </select>
+        </div>
+        <button type="submit">Reload with Configuration</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>Embed Code</h2>
+      <p>Add this script tag to any website to embed the widget:</p>
+      <div class="code-block" id="embed-code">&lt;script src="dist/widget.js" data-token="YOUR_TOKEN"&gt;&lt;/script&gt;</div>
+    </div>
+
+    <div class="card">
+      <h2>Widget State</h2>
+      <div class="code-block" id="widget-state">Open console and type <strong>ChatAiWidget</strong> to inspect the API.</div>
+    </div>
+  </main>
+
+  <script>
+    // Config form handler
+    document.getElementById('config-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const token = document.getElementById('token').value;
+      const position = document.getElementById('position').value;
+      const language = document.getElementById('language').value;
+      const color = document.getElementById('color').value;
+      const theme = document.getElementById('theme').value;
+      const chameleon = document.getElementById('chameleon').value;
+
+      // Update embed code preview
+      const params = [
+        token ? `data-token="${token}"` : '',
+        `data-position="${position}"`,
+        `data-language="${language}"`,
+        `data-color="${color}"`,
+        `data-theme="${theme}"`,
+        `data-chameleon="${chameleon}"`,
+      ].filter(Boolean).join(' ');
+
+      document.getElementById('embed-code').textContent =
+        `<script src="dist/widget.js" ${params}><\/script>`;
+
+      // Update state display
+      document.getElementById('widget-state').innerHTML = `
+        <pre style="margin:0;">{
+  config: {
+    token: "${token || '(empty)'}",
+    position: "${position}",
+    language: "${language}",
+    primaryColor: "${color}",
+    theme: "${theme}",
+    chameleonMode: ${chameleon}
+  }
+}</pre>`;
+    });
+  </script>
+
+  <!-- Load the widget -->
+  <script src="dist/widget.js"
+          data-token="test_token_123"
+          data-position="bottom-right"
+          data-color="#b8860b"
+          data-language="en"
+          data-theme="light"
+          data-chameleon="true">
+  </script>
+</body>
+</html>
