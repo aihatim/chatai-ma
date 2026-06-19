@@ -2,7 +2,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY backend/package.json backend/package-lock.json ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 COPY backend/ .
 RUN npx prisma generate
